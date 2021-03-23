@@ -6,6 +6,7 @@ const marked = require('marked');
 const models = require('../models/index');
 const config = require('../config');
 const tools = require('./tools');
+const { time } = require('console');
 
 // 收藏 或 取消收藏
 const collect = async function (req, res, next) {
@@ -89,10 +90,10 @@ const getCollectList = async function (req, res, next) {
           user_id: $user._id
         });
 
-        console.log('a:', collectI.create_at);
-        console.log('b:', collectJ.create_at);
         timeI = new Date(collectI.create_at).getTime();
         timeJ = new Date(collectJ.create_at).getTime();
+        $topics[i].create_at = timeI;
+        $topics[j].create_at = timeJ;
         if (timeI < timeJ) {
           tempTop = $topics[i];
           $topics[i] = $topics[j];
@@ -118,52 +119,17 @@ const getCollectList = async function (req, res, next) {
     //   return timeI < timeJ;
     // });
 
-
-    // $topics = tools.sort($topics, function (a, b) {
-    //   let collectI, collectJ, timeI, timeJ;
-    //   models.topicCollectSchema.findOne({
-    //       topic_id: a._id,
-    //       user_id: $user._id
-    //     })
-    //     .then((ret) => {
-    //       collectI = ret;
-    //       return models.topicCollectSchema.findOne({
-    //         topic_id: b._id,
-    //         user_id: $user._id
-    //       });
-    //     })
-    //     .then((ret) => {
-    //       collectJ = ret;
-    //       console.log('a:', collectI.create_at);
-    //       console.log('b:', collectJ.create_at);
-    //       timeI = new Date(collectI.create_at).getTime();
-    //       timeJ = new Date(collectJ.create_at).getTime();
-    //       return timeI < timeJ;
-    //     })
-    //     .catch((err) => {
-    //       next(err);
-    //     });
-    // });
-
-    console.log($topics);
-    console.log(123);
-
     for (let i = 0; i < $topics.length; i++) {
       let author = await models.userSchema.findOne({
         _id: $topics[i].author_id
-      });
-      let collect = await models.topicCollectSchema.findOne({
-        topic_id: $topics[i]._id,
-        user_id: $user._id
-      });
-      console.log(collect.create_at);
+      }); 
       topics[i] = {
         title: $topics[i].title,
         type: $topics[i].type,
         reply_count: $topics[i].reply_count,
         visit_count: $topics[i].visit_count,
         // 这里应该是 收藏时间
-        time_interval: tools.getIntervalTime(new Date(collect.create_at)),
+        time_interval: tools.getIntervalTime(new Date($topics[i].create_at)),
         author_avatar: path.join('/public/images/user_avatar/', author.avatar),
         author_nickname: author.nickname,
         topic_id: String($topics[i]._id)

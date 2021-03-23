@@ -71,11 +71,29 @@ let getUser = async function (req, res, next) {
       return -(a - b);
     });
 
-    $recent_replies.sort(function (a, b) {
-      a = new Date(a.create_at).getTime();
-      b = new Date(b.create_at).getTime();
-      return -(a - b);
-    });
+    for (let i = 0; i < $recent_replies.length; i++) {
+      for (let j = i + 1; j < $recent_replies.length; j++) {
+        let replyI, replyJ, tempTop, timeI, timeJ;
+        replyI = await models.replySchema.findOne({
+          topic_id: $recent_replies[i]._id,
+          replier_id: $user._id
+        });
+        replyJ = await models.replySchema.findOne({
+          topic_id: $recent_replies[j]._id,
+          replier_id: $user._id
+        });
+
+        timeI = new Date(replyI.create_at).getTime();
+        timeJ = new Date(replyJ.create_at).getTime();
+        $recent_replies[i].create_at = timeI;
+        $recent_replies[j].create_at = timeJ;
+        if (timeI < timeJ) {
+          tempTop = $recent_replies[i];
+          $recent_replies[i] = $recent_replies[j];
+          $recent_replies[j] = tempTop;
+        }
+      } 
+    }
 
     // 取前5个 
     $recent_topics = $recent_topics.slice(0, 5);
@@ -260,14 +278,37 @@ let getUserReplies = async function (req, res, next) {
       }
     }
 
-
-
     // 按发布时间 距今 的时间间隔 大小，升序排列
     $topics.sort(function (a, b) {
       a = new Date(a.create_at).getTime();
       b = new Date(b.create_at).getTime();
       return -(a - b);
     });
+
+    // 按参与话题的时间 距今 的时间间隔 大小，升序排列
+    for (let i = 0; i < $topics.length; i++) {
+      for (let j = i + 1; j < $topics.length; j++) {
+        let replyI, replyJ, tempTop, timeI, timeJ;
+        replyI = await models.replySchema.findOne({
+          topic_id: $topics[i]._id,
+          replier_id: $user._id
+        });
+        replyJ = await models.replySchema.findOne({
+          topic_id: $topics[j]._id,
+          replier_id: $user._id
+        });
+
+        timeI = new Date(replyI.create_at).getTime();
+        timeJ = new Date(replyJ.create_at).getTime();
+        $topics[i].create_at = timeI;
+        $topics[j].create_at = timeJ;
+        if (timeI < timeJ) {
+          tempTop = $topics[i];
+          $topics[i] = $topics[j];
+          $topics[j] = tempTop;
+        }
+      } 
+    }
 
     // 按路由要求对话题信息进行筛选
     let topics = [];

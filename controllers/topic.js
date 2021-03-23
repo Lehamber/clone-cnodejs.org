@@ -88,6 +88,13 @@ const getContentPage = async function(req, res, next) {
       topic_id: mongoose.Types.ObjectId(topic_id)
     });
 
+    // 按评论时间 距今的时间间隔  降序
+    $replies.sort(function(a, b) {
+      a = new Date(a.create_at).getTime();
+      b = new Date(b.create_at).getTime();
+      return a - b;
+    });
+
     let replies = [];
     for (var i = 0; i < $replies.length; i++) {
       let replier = await models.userSchema.findById(String($replies[i].replier_id));
@@ -98,7 +105,7 @@ const getContentPage = async function(req, res, next) {
         rep_replier = await models.userSchema.findById(String(rep_reply.replier_id));
       }
 
-      // 查看登录页面的用户  使用可以给此 评论点赞
+      // 查看登录页面的用户 是否可以给此 评论点赞
       let can_support = true;
       let pra_reply = await models.PraiseSchema.findOne( {
         reply_id: $replies[i]._id,
@@ -129,7 +136,6 @@ const getContentPage = async function(req, res, next) {
       topic,
       replies
     });
-
   } catch (err) {
     next(err);
   }
