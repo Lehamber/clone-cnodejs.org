@@ -1,0 +1,32 @@
+<div id="topic_list">
+    {{ each topics }}
+    <div class="cell">
+        <a class="user_avatar pull-left" href="/user/{{ $value.author_nickname }}">
+            <img src="{{ $value.author_avatar }}" title="{{ $value.author_nickname }}">
+        </a>
+        <span class="reply_count pull-left">
+            <span class="count_of_replies" title="回复数">
+                {{ $value.reply_count }}
+            </span>
+            <span class="count_seperator">/</span>
+            <span class="count_of_visits" title="点击数">
+                {{ $value.visit_count }}
+            </span>
+        </span>
+        <a class="last_time pull-right" href="/topic/{{ $value.topic_id }}">
+            <img class="user_small_avatar" src="{{ $value.author_avatar }}">
+            <span class="last_active_time">{{ $value.time_interval }}</span>
+        </a>
+        <div class="topic_title_wrapper">
+            {{ if $value.type === 'share' }}
+            <span class="topiclist-tab">分享</span>
+            {{ else }}
+            <span class="topiclist-tab">问答</span>
+            {{ /if }}
+            <a class="topic_title" href="/topic/{{ $value.topic_id }}" title="{{ $value.title }}">
+                {{ $value.title }}
+            </a>
+        </div>
+    </div>
+    {{ /each }}
+</div>

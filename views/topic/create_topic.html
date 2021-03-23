@@ -1,0 +1,155 @@
+{{ extend '../layout.html' }}
+
+{{ block 'head' }}
+
+<link rel="stylesheet" href="/public/editor_plugin/editor.css">
+
+{{ /block }}
+
+{{ block 'content' }}
+
+<div id="main">
+  <div id="sidebar">
+    <div class="panel">
+      <div class="header">
+        <span class="col_fade">Markdown 语法参考</span>
+      </div>
+      <div class="inner">
+        <ol>
+          <li><tt>### 单行的标题</tt></li>
+          <li><tt>**粗体**</tt></li>
+          <li><tt>`console.log('行内代码')`</tt></li>
+          <li><tt>```js\n code \n```</tt> 标记代码块</li>
+          <li><tt>[内容](链接)</tt></li>
+          <li><tt>![文字说明](图片链接)</tt></li>
+        </ol>
+        <span><a href="https://segmentfault.com/markdown" target="_blank">Markdown 文档</a></span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="header">
+        <span class="col_fade">话题发布指南</span>
+      </div>
+      <div class="inner">
+        <ol>
+          <li>尽量把话题要点浓缩到标题里</li>
+          <li>代码含义和报错可在 <a href="http://segmentfault.com/t/node.js">SegmentFault</a> 提问</li>
+        </ol>
+      </div>
+    </div>
+
+  </div>
+  <div id="content">
+    <div class="panel">
+      <div class="header">
+        <ol class="breadcrumb">
+          <li><a href="/">主页</a><span class="divider">/</span></li>
+
+          <li class="active">发布话题</li>
+
+        </ol>
+      </div>
+      <div class="inner post">
+        <form id="create_topic_form">
+          <fieldset>
+            <span class="tab-selector">选择版块：</span>
+            <select name="type" id="tab-value">
+              <option value="">请选择</option>
+              <option value="share">分享</option>
+              <option value="ask">问答</option>
+            </select>
+
+            <span id="topic_create_warn"></span>
+            <textarea autofocus="" class="span9" id="title" name="title" rows="1" 
+              minlength="10" required></textarea>
+
+            <div class="markdown_editor in_editor">
+              <div class="markdown_in_editor">
+                <textarea class="editor" name="t_content" rows="20" placeholder="文章支持 Markdown 语法, 请注意标记代码"
+                  style="display: none;" minlength="5">
+								</textarea>
+
+                <input type="submit" class="span-primary" value="提交">
+              </div>
+            </div>
+            <!-- <input type="hidden" id="topic_tags" name="topic_tags" value="">
+						<input type="hidden" name="_csrf" value="oAzyLb6L-dR2K-RLvAtNh3aUyvz6pf0RFnKY"> -->
+          </fieldset>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- markdown editor -->
+  <!-- <script src="//static2.cnodejs.org/public/editor.min.1a456564.min.js"></script> -->
+  <script src="/public/editor_plugin/editor.js"></script>
+  <script src="/public/editor_plugin/marked.js"></script>
+  <script src="/public/javascripts/tool.js"></script>
+  <script>
+    (function () {
+      const editor = new Editor();
+      editor.render($('.editor')[0]);
+
+      $('#create_topic_form').on('submit', function (e) {
+        // 版块选择的检查，必须选择
+        const tabValue = $('#tab-value').val();
+        if (!tabValue) {
+          alert('必须选择一个版块！');
+          $('.submit_btn').button('reset');
+          $('.tab-selector').css('color', 'red');
+          return false;
+        }
+
+        e.preventDefault();
+        const formData = $(this).serialize();
+        sendAjax('post', '/topic/create', formData)
+          .then((data) => {
+            if (data.code === 1) {
+              window.location.href = '/user/{{ session_user.nickname }}';
+            } else {
+              alert(data.message);
+            }
+          });
+      });
+    })();
+  </script>
+
+</div>
+<div class="modal modal_image hide fade" tabindex="-1" role="dialog" aria-labelledby="editorToolImageTitle"
+  aria-hidden="true">
+  <div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="editorToolImageTitle">图片</h3>
+  </div>
+  <div class="modal-body">
+    <div class="upload-img"
+      style="height: 50px; padding: 60px 0px; text-align: center; border: 4px dashed rgb(221, 221, 221);">
+      <div class="button webuploader-container" style="width: 86px; height: 40px; margin: 0px auto;">
+        <div class="webuploader-pick">上传图片</div>
+        <div id="rt_rt_1ev3t4vbv7ujisrvkiieamtq1"
+          style="position: absolute; overflow: hidden; inset: 0px auto auto 0px; width: 86px; height: 40px;">
+          <input type="file" name="file" class="webuploader-element-invisible" accept="image/*"><label
+            style="opacity: 0; width: 100%; height: 100%; display: block; cursor: pointer; background: rgb(255, 255, 255);"></label>
+        </div>
+      </div><span class="tip" style="display: none;"></span>
+      <div class="alert alert-error hide"></div>
+    </div>
+  </div>
+</div>
+<div class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="editorToolImageTitle" aria-hidden="true">
+  <div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="editorToolImageTitle">添加链接</h3>
+  </div>
+  <div class="modal-body">
+    <form class="form-horizontal">
+      <div class="control-group"><label class="control-label">标题</label>
+        <div class="controls"><input type="text" name="title" placeholder="Title"></div>
+      </div>
+      <div class="control-group"><label class="control-label">链接</label>
+        <div class="controls"><input type="text" name="link" value="http://" placeholder="Link"></div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer"><button class="btn btn-primary" role="save">确定</button></div>
+</div>
+
+{{ /block }}

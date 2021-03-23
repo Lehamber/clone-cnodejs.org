@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="./public/editor_plugin/editor.css">
+  <script src="./public/editor_plugin/editor.js"></script>
+  <script src="./public/editor_plugin/marked.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.js"></script>
+
+  <script>
+    function Person1(name, age) {
+      this.name = name;
+      this.age = age;
+    }
+
+    Person1.prototype.getInfo = function () {
+      console.log('name:', this.name, '\nage:', this.age);
+    }
+    Object.defineProperty(Person1.prototype, 'getInfo', {
+      enumerable: false
+    });
+
+    function Teacher1(course) {
+      this.course = course;
+    }
+
+    Teacher1.prototype = new Person1();
+
+    Object.defineProperty(Teacher1.prototype, 'constructor', {
+      enumerable: false,
+      value: Teacher1
+    });
+
+    var will1 = new Teacher1('数学');
+    will1.name = 'JonhLiu';
+    will1.age = 21;
+    will1.getInfo();
+
+    class Person {
+      constructor(name, age) {
+        this.name = name;
+        this.age = age;
+      }
+      getInfo() {
+        console.log(this.name, this.age);
+      }
+    }
+
+    class Teacher extends Person {
+      constructor(name, age, course) {
+        super(name, age);
+        this.course = course;
+      }
+
+      getInfo() {
+        console.log(this.course, this.name, this.age);
+      }
+    }
+
+    var will = new Teacher('JohnLiu', 21, '数学');
+    will.getInfo();
+  </script>
+</head>
+
+<body>
+
+</body>
+
+</html>

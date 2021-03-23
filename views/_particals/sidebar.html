@@ -1,0 +1,46 @@
+<div id="sidebar">
+    {{ if user }}
+    <div class="panel">
+        <div class="header">
+            <span class="col_fade">个人信息</span>
+        </div>
+        <div class="inner">
+            <div class="user_card">
+                <div>
+                    <a class="user_avatar" href="/user/{{ user.nickname }}">
+                        <img src="{{ user.avatar }}" title="{{ user.nickname }}">
+                    </a>
+                    <span class="user_name"><a class="dark" href="/user/{{ user.nickname }}">{{ user.nickname }}</a></span>
+                    <div class="space clearfix"></div>
+                    <span class="signature">
+                        “
+
+                        {{ user.signature }}
+
+                        ”
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel">
+        <div class="inner">
+            <a href="/topic/create" id="create_topic_btn">
+                <span class="span-success">发布话题</span>
+            </a>
+        </div>
+    </div>  
+    {{ else }}
+    <div class="panel">
+        <div class="inner">
+          <p>CNode：Node.js专业中文社区</p>
+          <div>
+            您可以
+            <a href="/signin">登录</a>
+            或
+            <a href="/signup">注册</a>
+          </div>
+        </div>
+    </div>
+    {{ /if }}
+</div>

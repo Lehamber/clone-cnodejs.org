@@ -1,0 +1,92 @@
+{{ extend '../layout.html' }}
+
+{{ block 'head' }}{{ /block }}
+
+{{ block 'content' }}
+<div id="main"> 
+	{{ include '../_particals/sidebar.html' }}
+	<div id="content">
+		<div class="panel">
+			<div class="header">
+				<ul class="breadcrumb">
+					<li><a href="/">主页</a><span class="divider">/</span></li>
+					<li class="active"><a href="/user/{{ user.nickname }}">{{ user.nickname }}的主页</a></li>
+				</ul>
+			</div>
+		</div>
+		<div class="panel">
+			<div class="header">{{ user.nickname }} 创建的话题</div>
+			 
+			<div class="inner no-padding">
+                {{ include '../_particals/topic_list.html' }}
+                <div class="pagination" current_page="{{ page }}">
+                    <ul>
+                        {{ if page === 1 }}
+                        <li class="disabled"><a>«</a></li>
+                        {{ else }}
+                        <li class="disabled"><a href="/user/{{ user.nickname }}/topics?page=1">«</a></li>
+                        {{ /if }}
+            
+                        {{ if page_count <= 5 }}
+            
+                        <!-- 因为这里的循环要使用下标 所以就使用了原始语法 -->
+                        <% for (var i = 1; i <= page_count; i++){ %>
+                        <li><a href="/user/{{ user.nickname }}/topics?page=<%= i %>"><%= i %></a></li>
+                        <% } %>
+            
+                        {{ else }}
+                            {{ if page <= 3 }}
+                            <li><a href="/user/{{ user.nickname }}/topics?page=1">1</a></li>
+                            <li><a href="/user/{{ user.nickname }}/topics?page=2">2</a></li>
+                            <li><a href="/user/{{ user.nickname }}/topics?page=3">3</a></li>
+                            <li><a href="/user/{{ user.nickname }}/topics?page=4">4</a></li>
+                            <li><a href="/user/{{ user.nickname }}/topics?page=5">5</a></li>
+                            <li><a>...</a></li>
+                            {{ else if page+2 >= page_count }}
+                            <li><a>...</a></li>
+                            <li><a href="/user/{{ user.nickname }}/topics?page={{ page_count-4 }}">{{ page_count-4 }}</a></li>
+                            <li><a href="/user/{{ user.nickname }}/topics?page={{ page_count-3 }}">{{ page_count-3 }}</a></li>
+                            <li><a href="/user/{{ user.nickname }}/topics?page={{ page_count-2 }}">{{ page_count-2 }}</a></li>
+                            <li><a href="/user/{{ user.nickname }}/topics?page={{ page_count-1 }}">{{ page_count-1 }}</a></li>
+                            <li><a href="/user/{{ user.nickname }}/topics?page={{ page_count }}">{{ page_count }}</a></li>
+                            {{ else }}
+                            <li><a>...</a></li>
+                            <li><a href="/user/{{ user.nickname }}/topics?page={{ page-2 }}">{{ page-2 }}</a></li>
+                            <li><a href="/user/{{ user.nickname }}/topics?page={{ page-1 }}">{{ page-1 }}</a></li>
+                            <li><a href="/user/{{ user.nickname }}/topics?page={{ page }}">{{ page }}</a></li>
+                            <li><a href="/user/{{ user.nickname }}/topics?page={{ page+1 }}">{{ page+1 }}</a></li>
+                            <li><a href="/user/{{ user.nickname }}/topics?page={{ page+2 }}">{{ page+2 }}</a></li>
+                            <li><a>...</a></li>
+                            {{ /if }}
+                        {{ /if }}
+            
+                        {{ if page === page_count }}
+                        <li class="disabled"><a>»</a></li>
+                        {{ else }}
+                        <li><a href="/user/{{ user.nickname }}/topics?page={{ page_count }}">»</a></li>
+                        {{ /if }}
+                    </ul>
+                </div>
+                <script>
+                    $(document).ready(function () {
+                        const $nav = $('.pagination');
+                        const current_page = $nav.attr('current_page');
+                        if (current_page) {
+                            $nav.find('li').each(function () {
+                                const $li = $(this);
+                                const $a = $li.find('a');
+                                if ($a.html() == current_page) {
+                                    $li.addClass('active');
+                                    $li.addClass('disabled');
+                                    $a.removeAttr('href');
+                                }
+                            });
+                        }
+                    });
+                </script>
+            </div>
+		</div>
+	</div>
+</div>
+
+{{ /block }}

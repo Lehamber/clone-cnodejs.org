@@ -1,0 +1,422 @@
+{{ extend '../layout.html' }}
+
+{{ block 'head' }}
+<link rel="stylesheet" href="/public/stylesheets/setting.css">
+<link href="/node_modules/cropperjs/dist/cropper.css" rel="stylesheet">
+
+{{ /block }}
+
+{{ block 'content' }}
+<div id="main">
+	{{ include '../_particals/sidebar.html' }}
+	<div id="content">
+		<div class="panel">
+			<div class="header">
+				<ul class="breadcrumb">
+					<li><a href="/">主页</a><span class="divider">/</span></li>
+					<li class="active">设置</li>
+				</ul>
+			</div>
+			<div class="inner">
+				<form id="avatar_form" style="margin-left: 30px;">
+					<p class="avatar_title" style="margin-left: -30px;">用户头像</p>
+					<p class="ratio_error" style="color: red; display: none;">请选择合适比例的图片！</p>
+					<p class="upload_error" style="color: red; display: none;">图片上传错误，请稍后重试！</p>
+					<p class="suffix_error" style="color: red; display: none;"></p>
+					<p class="size_error" style="color: red; display: none;">图片大小不能大于2MB！</p>
+					<div class="avatar_img">
+						<img src="{{ user.avatar }}" style="width: 150px; height: 150px;" alt="用户头像"
+							title="{{ user.nickname }}">
+					</div>
+					<div id="avatar_edit" style="cursor: pointer; display: inline-block;">
+						<i class="iconfont">&#xe600;</i>
+						编辑
+					</div>
+					<input type="file" id="avatar_file" name="avatar" accept=".jpg, .jpeg, .png, .jfif, .tiff"
+						style="display:none">
+				</form>
+				<div id="avatar_modal" class="modal fade" style="border: none;">
+					<!-- 窗口声明 -->
+					<div class="modal-dialog">
+						<!-- 内容声明 -->
+						<div class="modal-content">
+							<!-- 头部 -->
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal">
+									<span>×</span>
+								</button>
+								<h4 class="modal-title">编辑头像</h4>
+							</div>
+							<!-- 主体 -->
+							<div class="modal-body"
+								style="overflow-y: visible; padding: 5px; max-height: 500px; box-sizing: border-box;">
+								<div class="cropper">
+									<canvas id="canvas"></canvas>
+								</div>
+							</div>
+							<!-- 注脚 -->
+							<div class="modal-footer">
+								<button type="button" class="makesure btn btn-success"> 确认 </button>
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+
+		<div class="panel">
+			<div class="header">
+				<span class="col_fade">个人信息</span>
+			</div>
+			<div class="inner">
+				<form id="user_form" class="form-horizontal" action="/setting" method="post">
+					<div class="control-group">
+						<label class="control-label" for="nickname">用户名</label>
+						<div class="controls">
+							<input class="input-xlarge readonly" id="nickname" name="nickname" size="30" type="text"
+								readonly="true" value="{{ user.nickname }}">
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label" for="email">电子邮件</label>
+						<div class="controls">
+							<input class="input-xlarge readonly" id="email" name="email" size="30" type="text"
+								readonly="true" value="{{ user.email }}">
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label" for="personal_web">个人网站</label>
+						<div class="controls">
+							<input class="input-xlarge" id="personal_web" name="personal_web" size="30" type="text"
+								value="{{ user.personal_web }}">
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label" for="weibo">微博</label>
+						<div class="controls">
+							<input class="input-xlarge" id="weibo" name="weibo" size="30" type="text"
+								value="{{ user.weibo }}" placeholder="e.g. http://weibo.com/cnodejs">
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label" for="signature">个性签名</label>
+						<div class="controls">
+							<textarea class="input-xlarge" id="signature" name="signature"
+								size="30">{{ user.signature }}</textarea>
+						</div>
+					</div>
+					<div class="form-actions">
+						<input type="submit" class="span-primary" value="保存设置">
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<div class="panel">
+			<div class="header">
+				<span class="col_fade">更改密码</span>
+			</div>
+			<div class="inner">
+				<form id="change_pass_form" class="form-horizontal" action="/setting" method="post">
+					<p class="not_equal" style="display: none; color: red;">两次输入新密码不一致！</p>
+					<p class="old_pwd_error" style="display: none; color: red;">旧密码错误！</p>
+					<p class="old_new_is_same" style="display: none; color: red;">新密码和旧密码不能是一样的！</p>
+					<div class="control-group">
+						<label class="control-label" for="old_pass">当前密码</label>
+
+						<div class="controls">
+							<input class="input-xlarge" type="password" id="old_pass" name="old_pass" size="30">
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label" for="new_pass">新密码</label>
+
+						<div class="controls">
+							<input class="input-xlarge" type="password" id="new_pass" name="new_pass" size="30">
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label" for="confirm_new_pass">确认新密码</label>
+
+						<div class="controls">
+							<input class="input-xlarge" type="password" id="confirm_new_pass" name="confirm_new_pass"
+								size="30">
+						</div>
+					</div>
+					<div class="form-actions">
+						<input type="submit" class="span-primary" value="更改密码">
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<script src="/node_modules/cropperjs/dist/cropper.js"></script>
+<script src="/public/javascripts/tool.js"></script>
+<script>
+	$(function () {
+
+		// // 封装ajax请求
+		// function sendAjax(data, type, url, exOptions) {
+
+		// 	return new Promise(function (resolve, reject) {
+		// 		$.ajax({
+		// 			type,
+		// 			data,
+		// 			url,
+		// 			...exOptions,
+		// 			dataType: 'json',
+		// 			success(ret) {
+		// 				resolve(ret);
+		// 			},
+		// 			error() {
+		// 				alert('网络故障或服务端处理出错，请稍后重试！');
+		// 			}
+		// 		});
+		// 	});
+		// }
+
+		// 监听头像编辑按钮别点击
+		$('#avatar_edit').on('click', function () {
+			$('#avatar_file').trigger('click');
+		});
+
+		$('#avatar_file').on('change', function () {
+			const suffixes = $(this).attr('accept');
+			const file = this.files[0];
+			const suff = file.name.slice(file.name.lastIndexOf('.'));
+			let timeOut = null;
+
+			// 限制图片格式
+			if (suffixes.search(suff) === -1) {
+				const suff_err = $('#avatar_form .suffix_error');
+				suff_err.text(`图片格式错误，不支持 ${suff} 格式！`);
+				suff_err.css('display', 'block');
+				clearTimeout(timeOut);
+				timeOut = setTimeout(() => {
+					suff_err.css('display', 'none');
+				}, 5000);
+
+				return;
+			}
+
+			// 限制图片大小 不能大于 2MB
+			if (file.size > 2 * 1024 * 1024) {
+				const size_err = $('#avatar_form .size_error');
+				size_err.css('display', 'block');
+				clearTimeout(timeOut);
+				timeOut = setTimeout(() => {
+					size_err.css('display', 'none');
+				}, 5000);
+
+				return;
+			}
+
+			if (window.FileReader) {
+				const reader = new FileReader();
+				reader.readAsDataURL(file);
+				// 监听读取文件后的事件
+				reader.onloadend = function (event) {
+					$('<img/>').attr('src', event.target.result).on('load', function () {
+						// 设置要展示canvas的最大 宽度 和 最大长度
+						const maxHeight = 500;
+						const maxWidth = 700;
+
+						let mobWidth = null; // modal-body 盒子的 宽度
+						let mobHeight = null; // modal-body 盒子的 高度
+
+						let canWidth = null; // canvas 的宽度
+						let canHeight = null; // canvas 的高度
+
+						if (maxWidth / maxHeight > this.width / this.height) {
+							canHeight = maxHeight;
+							canWidth = maxHeight / this.height * this.width;
+
+							mobWidth = canWidth;
+							mobHeight = canHeight;
+						} else {
+							canWidth = maxWidth;
+							canHeight = maxWidth / this.width * this.height;
+
+							mobWidth = canWidth;
+							mobHeight = canHeight;
+						}
+
+						// 如果图片的宽高比过于异常,
+						if (this.width / this.height >= 5 || this.height / this.width >= 5) {
+							const ratio_error = $('#avatar_form .ratio_error');
+							ratio_error.css('display', 'block');
+
+							clearTimeout(timeOut);
+							timeOut = setTimeout(function () {
+								ratio_error.css('display', 'none');
+							}, 5000);
+
+							return;
+						}
+
+
+						$('#avatar_modal').css('width', mobWidth + 'px');
+						$('#avatar_modal .modal-body').css('height', mobHeight + 'px');
+
+						// 清除之前的 canvas, 创建新的canvas
+						$('#avatar_modal .cropper').html('');
+						$('#avatar_modal .cropper').append($(`
+							<canvas id="canvas"></canvas>
+						`));
+
+						const canvas = $('#canvas');
+						const ctx = canvas[0].getContext('2d');
+						// ctx.fifillStyle = '#fff';
+
+						canvas.attr('width', canWidth - 10);
+						canvas.attr('height', canHeight - 10);
+						canvas.parent().css('width', canWidth - 10 + 'px');
+						canvas.parent().css('height', canHeight - 10 + 'px');
+
+						// ctx.drawRect(0, 0, 600, 600);
+						ctx.drawImage(this, 0, 0, canWidth - 10, canHeight - 10);
+
+						// 绘制裁剪区域
+						const cropper = new Cropper(canvas[0], {
+							aspectRatio: 1 / 1,
+							viewMode: 2, // 让crop box 不能大于画布
+							dragMode: 'none', // 让canvas图片不能被拖动
+							center: false, // 让中心 点消失
+							highlight: false,
+							guides: true, // 
+							// background: false,
+							zoomable: false,  // 禁止方法缩小
+							autoCropArea: 1, //
+							minContainerWidth: 0,
+							minContainerHeight: 0,
+							minCropBoxWidth: 200,
+							minCropBoxHeight: 200,
+							responsive: true
+						});
+
+						$('#avatar_modal .makesure').on('click', function () {
+							const canvas = cropper.getCroppedCanvas({
+								width: 160,
+								height: 90,
+								minWidth: 256,
+								minHeight: 256,
+								maxWidth: 4096,
+								maxHeight: 4096,
+								fillColor: '#fff',
+								imageSmoothingEnabled: false,
+								imageSmoothingQuality: 'high',
+							});
+
+							canvas.toBlob((blob) => {
+								const formData = new FormData();
+								// 设置图片的名字， 将图片
+								formData.append('avatarFile', blob, 'example.jpg');
+								sendAjax('post', '/setting/avatar', formData,{
+									cache: false,
+									processData: false,
+									contentType: false
+								}).then((ret) => {
+									if (ret.code === 1) {
+										window.location.reload();
+									} else {
+										alert(ret.message);
+										$('avatar_modal').modal('fade');
+									}
+								});
+							}, 'image/jpeg'); // 默认类型设为 jpeg
+						});
+
+						$('#avatar_modal').modal('show');
+						$('#avatar_modal .makesure').on('click', function () {
+							$('#avatar_modal').modal('hide');
+						});
+					});
+				}
+			}		 
+		});
+	
+		//  监听modal 完全显示出来的 
+		$('#avatar_modal').on('shown.bs.modal', function () {
+			// 手动触发 window 的 resize 事件  ----- 为的是让 截取modal中  图片能正常显示
+			if (document.createEvent) {
+				const event = document.createEvent("HTMLEvents");
+				event.initEvent("resize", true, true);
+				window.dispatchEvent(event);
+			} else if (document.createEventObject) {
+				window.fireEvent("onresize");
+			}
+		});
+
+		// 修改个人信息
+		$('#user_form').on('submit', function (e) {
+			e.preventDefault();
+
+			const data = $(this).serialize();
+			sendAjax('post', '/setting/userInfo', data).then((ret) => {
+				$('#weibo').val(ret.data.weibo);
+				$('#personal_web').val(ret.data.personal_web);
+				$('#signature').val(ret.data.signature);
+				if (ret.code === 1) {
+					alert('信息修改成功！');
+					window.location.reload();
+				} else {
+					window.alert('修改失败，请稍后重试！');
+				}
+			});
+		});
+
+		// 修改密码
+		$('#change_pass_form').on('submit', function (e) {
+			e.preventDefault();
+
+			const oldPwd = $('#old_pass').val();
+			const newPwd = $('#new_pass').val();
+			const confirmNewPwd = $('#confirm_new_pass').val();
+			let timeOut = null;
+
+			if (newPwd !== confirmNewPwd) {
+				$(this).find('.not_equal').css('display', 'block');
+
+				clearTimeout(timeOut);
+				timeOut = setTimeout(() => {
+					$(this).find('.not_equal').css('display', 'none');
+				}, 5000);
+
+				return false;
+			}
+
+			if (oldPwd === newPwd) {
+				$(this).find('.old_new_is_same').css('display', 'block');
+
+				clearTimeout(timeOut);
+				timeOut = setTimeout(() => {
+					$(this).find('.old_new_is_same').css('display', 'none');
+				}, 5000);
+
+				return false;
+			}
+
+			const data = { oldPwd, newPwd };
+			sendAjax('post', '/setting/password', data).then((ret) => {
+				if (ret.code === 1) {
+					window.alert('密码修改成功！');
+					window.location.reload();
+				} else if (ret.code === 2) {
+					$(this).find('.old_pwd_error').css('display', 'block');
+					clearTimeout(timeOut);
+					timeOut = setTimeout(() => {
+						$(this).find('.old_pwd_error').css('display', 'none');
+					}, 5000);
+				} else {
+					alert(ret.message);
+				}
+			});
+		});
+	});
+</script>
+
+{{ /block }}

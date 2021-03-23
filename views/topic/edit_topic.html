@@ -1,0 +1,133 @@
+{{ extend '../layout.html' }}
+
+{{ block 'head' }}
+
+<link rel="stylesheet" href="/public/editor_plugin/editor.css">
+<script src="/public/editor_plugin/editor.js"></script>
+<script src="/public/editor_plugin/marked.js"></script>
+
+{{ /block }}
+
+{{ block 'content' }}
+<div id="main">
+    <div id="sidebar">
+        <div class="panel">
+            <div class="header">
+                <span class="col_fade">Markdown 语法参考</span>
+            </div>
+            <div class="inner">
+                <ol>
+                    <li><tt>### 单行的标题</tt></li>
+                    <li><tt>**粗体**</tt></li>
+                    <li><tt>`console.log('行内代码')`</tt></li>
+                    <li><tt>```js\n code \n```</tt> 标记代码块</li>
+                    <li><tt>[内容](链接)</tt></li>
+                    <li><tt>![文字说明](图片链接)</tt></li>
+                </ol>
+                <span><a href="https://segmentfault.com/markdown" target="_blank">Markdown 文档</a></span>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="header">
+                <span class="col_fade">话题发布指南</span>
+            </div>
+            <div class="inner">
+                <ol>
+                    <li>尽量把话题要点浓缩到标题里</li>
+                    <li>代码含义和报错可在 <a href="http://segmentfault.com/t/node.js">SegmentFault</a> 提问</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <div id="content">
+        <div class="panel">
+            <div class="header">
+                <ol class="breadcrumb">
+                    <li><a href="/">主页</a><span class="divider">/</span></li>
+                    <li class="active">编辑话题</li>
+                </ol>
+            </div>
+            <div class="inner post">
+                <form id="create_topic_form" action="/topic/6048241b4655ea28b821ab58/edit" method="post">
+                    <fieldset>
+                        <input type="hidden" name="topic_id" value="{{ topic.topic_id }}">
+                        <span class="tab-selector">选择版块：</span>
+                        <select name="type" id="tab-value" required>
+                            <option value="">请选择</option>
+                            {{ set opt_arr = [
+                            {
+                            value: 'share',
+                            name: '分享'
+                            },
+                            {
+                            value: 'ask',
+                            name: '问答'
+                            }
+                            ]}}
+
+                            {{ each opt_arr }}
+                            {{ if topic.type === $value.value }}
+                            <option value="{{ $value.value }}" selected>{{ $value.name }}</option>
+                            {{ else }}
+                            <option value="{{ $value.value }}">{{ $value.name }}</option>
+                            {{ /if }}
+                            {{ /each }}
+                        </select>
+                        <span id="topic_create_warn"></span>
+                        <textarea autofocus="" class="span9" id="title" name="title" rows="1" placeholder="标题字数 10 字以上"
+                            required>{{ topic.title }}</textarea>
+
+                        <div class="markdown_editor in_editor">
+                            <div class="markdown_in_editor">
+                                <textarea class="editor" name="content" rows="20"
+                                    placeholder="文章支持 Markdown 语法, 请注意标记代码" style="display: none;"
+                                    required>{{ topic.content }}</textarea>
+                                <div class="editor_buttons">
+                                    <input type="submit" class="span-primary" value="提交">
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="/public/javascripts/tool.js"></script>
+    <script>
+        $(function () {
+            let editor = new Editor();
+            editor.render($('.editor')[0]);
+
+            // 提交编辑好的信息
+            $('#create_topic_form').on('submit', function (e) {
+
+                e.preventDefault();
+
+                //版块选择的检查，必须选择
+                const tabValue = $('#tab-value').val();
+                if (!tabValue) {
+                    alert('必须选择一个版块！');
+                    $('.submit_btn').button('reset');
+                    $('.tab-selector').css('color', 'red');
+                    return false;
+                }
+                // END 版块选择的检查，必须选择
+                const data = $(this).serialize();
+                sendAjax('post', '/topic/edit', data).then((ret) => {
+                    if (ret.code === 1) {
+                        const topic_id = $('input[name="topic_id"]').val();
+                        window.location.href = '/topic/' + topic_id;
+                    } else {
+                        alert('服务端处理出错，请稍后重试！')
+                    }
+                });
+            });
+        });
+    </script>
+
+</div>
+
+{{ /block }}

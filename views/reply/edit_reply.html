@@ -1,0 +1,111 @@
+{{ extend '../layout.html' }}
+
+{{ block 'head' }}
+
+<link rel="stylesheet" href="/public/editor_plugin/editor.css">
+<script src="/public/editor_plugin/editor.js"></script>
+<script src="/public/editor_plugin/marked.js"></script>
+
+{{ /block }}
+
+{{ block 'content' }}
+
+
+
+<div id="main">
+	<div id="sidebar">
+		<div class="panel">
+			<div class="header">
+				<span class="col_fade">Markdown 语法参考</span>
+			</div>
+			<div class="inner">
+				<ol>
+					<li><tt>### 单行的标题</tt></li>
+					<li><tt>**粗体**</tt></li>
+					<li><tt>`console.log('行内代码')`</tt></li>
+					<li><tt>```js\n code \n```</tt> 标记代码块</li>
+					<li><tt>[内容](链接)</tt></li>
+					<li><tt>![文字说明](图片链接)</tt></li>
+				</ol>
+				<span><a href="https://segmentfault.com/markdown" target="_blank">Markdown 文档</a></span>
+			</div>
+		</div>
+
+		<div class="panel">
+			<div class="header">
+				<span class="col_fade">话题发布指南</span>
+			</div>
+			<div class="inner">
+				<ol>
+					<li>尽量把话题要点浓缩到标题里</li>
+					<li>代码含义和报错可在 <a href="http://segmentfault.com/t/node.js">SegmentFault</a> 提问</li>
+				</ol>
+			</div>
+		</div>
+	</div>
+	<div id="content">
+		<div class="panel">
+			<div class="header">
+				<ol class="breadcrumb">
+					<li><a href="/">主页</a><span class="divider">/</span></li>
+					<li class="active">编辑回复</li>
+				</ol>
+			</div>
+			<div class="inner post">
+				<form id="edit_reply_form">
+					<!-- <fieldset>
+						<div class="markdown_editor in_editor">
+							<div class="markdown_in_editor">
+								<textarea class="editor" name="t_content" rows="20"
+									placeholder="回复支持 Markdown 语法, 请注意标记代码" autofocus=""
+									style="display: none;"></textarea>
+
+
+							</div>
+						</div>
+					</fieldset> -->
+					<div class="markdown_editor in_editor">
+						<div class="markdown_in_editor">
+							<input type="hidden" id="topic_id" name="topic_id" value="{{ topic_id }}">
+							<input type="hidden" name="reply_id" value="{{ reply_id }}">
+							<textarea class="span8 editor reply_editor" name="content" style="display: none;"
+								required>{{ content }}</textarea>
+							<div class="editor_buttons">
+								<input class="span-primary" type="submit" value="提交">
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+
+		</div>
+	</div>
+
+	<script src="/public/javascripts/tool.js"></script>
+	<script>
+		$(function () {
+			$('textarea.editor').each(function () {
+				const editor = new Editor();
+				editor.render(this);
+				$(this).data('editor', editor);
+			});
+
+			// 提交编辑信息
+			$('#edit_reply_form').on('submit', function (e) {
+				e.preventDefault();
+				const data = $(this).serialize();
+
+				sendAjax('post', '/reply/edit', data).then((ret) => {
+					if (ret.code === 1) {
+						let topic_id = $('#topic_id').val();
+						window.location.href = '/topic/' + topic_id;
+					} else {
+						alert(ret.message);
+					}
+
+				});
+			});
+		});
+	</script>
+</div>
+{{ /block}}

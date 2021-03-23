@@ -1,0 +1,146 @@
+{{ extend  '../layout.html' }}
+
+{{ block 'head' }}{{ /block }}
+
+{{ block 'content' }}
+<div id="main"> 
+    {{ include '../_particals/sidebar.html' }}
+    <div id="content">
+        <div class="panel">
+            <div class="header">
+              <ul class="breadcrumb">
+                <li><a href="/">主页</a><span class="divider">/</span></li>
+              </ul>
+            </div>
+            <div class="inner userinfo">
+              <div class="user_big_avatar">
+                <img src="{{ user.avatar }}" class="user_avatar" title="{{ user.nickname }}">
+              </div>
+              <a class="dark">{{ user.nickname }}</a>
+      
+              <div class="user_profile">
+                <ul class="unstyled">
+                  <li>
+                    <a class="dark" href="/collect/{{ user.nickname }}">
+                      <span class="big collect-topic-count">{{ user.collect_topic_count }}</span>个话题收藏
+                    </a>
+                  </li>
+                  {{ if user.personal_web }}
+                  <li>
+                    <i class="fa fa-lg fa-fw fa-home"></i>
+                    <a class="dark" href="{{ user.personal_web }}" target="_blank">{{ user.personal_web }}</a>
+                  </li>
+                  {{ /if }}
+                  {{ if user.weibo }}
+                  <li>
+                    <i class="fa fa-lg fa-fw fa-twitter"></i>
+                    <a class="dark" href="{{ user.weibo }}" target="_blank">{{ user.weibo }}</a>
+                  </li>
+                  {{ /if }}
+                </ul>
+              </div>
+              <p class="col_fade">注册时间 {{ user.time_interval }}</p>
+       
+            </div>
+        </div>
+        <div class="panel">
+            <div class="header">
+              <span class="col_fade">最近创建的话题</span>
+            </div>
+      
+            {{ if recent_topics.length === 0 }}
+            <div class="inner">
+              <p>无话题</p>
+            </div>
+            {{ else }}
+      
+            {{ each recent_topics }}
+            <div class="cell">
+              <a class="user_avatar pull-left" href="/user/{{ user.nickname }}">
+                <img src="{{ user.avatar }}" title="{{ user.nickname }}">
+              </a>
+              <span class="reply_count pull-left">
+                <span class="count_of_replies" title="回复数">
+                  {{ $value.reply_count }}
+                </span>
+                <span class="count_seperator">/</span>
+                <span class="count_of_visits" title="点击数">
+                  {{ $value.visit_count }}
+                </span>
+              </span>
+              <a class="last_time pull-right" href="/user/{{ user.nickname }}">
+                <img class="user_small_avatar" src="{{ user.avatar }}" title="{{ user.nickname }}">
+                <span class="last_active_time">{{ $value.time_interval }}</span>
+              </a>
+              <div class="topic_title_wrapper">
+                {{ if $value.type === "share" }}
+                <span class="topiclist-tab">分享</span>
+                {{ else }}
+                <span class="topiclist-tab">问答</span>
+                {{ /if }}
+                <a class="topic_title" href="/topic/{{ $value.topic_id }}" title="{{ $value.title }}">
+                  {{ $value.title }}
+                </a>
+              </div>
+            </div>
+            {{ /each }}
+      
+            <div class="cell more">
+              <a class="dark" href="/user/{{ user.nickname }}/topics">查看更多»</a>
+            </div>
+      
+            {{ /if }}
+        </div>
+
+        <div class="panel">
+            <div class="header">
+              <span class="col_fade">最近参与的话题</span>
+            </div>
+            {{ if recent_replies.length === 0 }}
+            <div class="inner">
+              <p>无话题</p>
+            </div>
+            {{ else }}
+      
+            {{ each recent_replies }}
+            <div class="cell">
+      
+              <a class="user_avatar pull-left" href="/user/{{ $value.author_nickname }}">
+                <img src="{{ $value.author_avatar }}" title="{{ $value.author_nickname }}">
+              </a>
+      
+              <span class="reply_count pull-left">
+                <span class="count_of_replies" title="回复数">
+                 {{ $value.reply_count }}
+                </span>
+                <span class="count_seperator">/</span>
+                <span class="count_of_visits" title="点击数">
+                  {{ $value.visit_count }}
+                </span>
+              </span>
+      
+      
+              <a class="last_time pull-right" href="/topic/{{ $value.topic_id }}">
+                <img class="user_small_avatar" src="{{ $value.author_avatar }}" title="{{ $value.author_nickname }}">
+                <span class="last_active_time">{{ $value.time_interval }}</span>
+              </a>
+              <div class="topic_title_wrapper">
+                {{ if $value.type === "share" }}
+                <span class="topiclist-tab">分享</span>
+                {{ else }}
+                <span class="topiclist-tab">问答</span>
+                {{ /if }}
+                <a class="topic_title" href="/topic/{{ $value.topic_id }}" title="{{ $value.title }}">
+                   {{ $value.title }}
+                </a>
+              </div>
+            </div>
+            {{ /each }}
+            <div class="cell more">
+              <a class="dark" href="/user/{{ user.nickname }}/replies">查看更多»</a>
+            </div>
+            {{ /if }}
+        </div>
+    </div>
+</div>
+{{ /block }}

@@ -1,0 +1,437 @@
+{{ extend '../layout.html' }}
+
+{{ block 'head' }}
+
+<link rel="stylesheet" href="/public/editor_plugin/editor.css">
+<script src="/public/editor_plugin/editor.js"></script>
+<script src="/public/editor_plugin/marked.js"></script>
+
+{{ /block }}
+
+{{ block 'content' }}
+
+<div id="main">
+  {{ include '../_particals/sidebar.html' }}
+
+  <div id="content">
+    <div class="panel">
+      <div class="header topic_header">
+        <span class="topic_full_title">
+          {{ if topic.type === 'share' }}
+          <span class="topiclist-tab">分享</span>
+          {{ else }}
+          <span class="topiclist-tab">问答</span>
+          {{ /if }}
+          {{ topic.title }}
+        </span>
+        <div class="changes">
+          <span>
+            发布于 {{ topic.create_time_interval }}
+          </span>
+          <span>
+            作者 <a href="/user/{{ user.nickname }}">{{ user.nickname }}</a>
+          </span>
+          <span>
+            {{ topic.visit_count }} 次浏览
+          </span>
+
+          <span>
+            最后一次编辑是 {{ topic.update_time_interval }}
+          </span>
+
+          {{ set tab_arr =
+          [
+          { tab: 'share', ch: '分享'},
+          { tab: 'ask', ch: '问答' }
+          ]
+          }}
+          {{ each tab_err }}
+          {{ if $value.tab === topic.type }}
+          <span> 来自 {{ $value.ch }}</span>
+          {{ /if }}
+          {{ /each }}
+
+          {{ if topic.collected }}
+          <input class="span-common pull-right collect_btn" data_topic_id="{{ topic.topic_id }}" data_col="de_collect"
+            type="button" value="取消收藏" style="display: block;">
+          <input class="span-common span-success pull-right collect_btn" data_topic_id="{{ topic.topic_id }}"
+            data_col="collect" type="button" value="收藏" style="display: none;">
+          {{ else }}
+          <input class="span-common pull-right collect_btn" data_topic_id="{{ topic.topic_id }}" data_col="de_collect"
+            type="button" value="取消收藏" style="display: none;">
+          <input class="span-common span-success pull-right collect_btn" data_topic_id="{{ topic.topic_id }}"
+            data_col="collect" type="button" value="收藏" style="display: block;">
+          {{ /if }}
+
+        </div>
+
+        <div id="manage_topic">
+          {{ if session_user }}
+          {{ if session_user.nickname === user.nickname }}
+          <a href="/topic/{{ topic.topic_id }}/edit">
+            <i class="fa fa-lg fa-pencil-square-o" title="编辑"></i></a>
+          <a href="/topic/{{ topic.topic_id }}/del" class="delete_topic_btn">
+            <i class="fa fa-lg fa-trash" title="删除"></i></a>
+          {{ /if }}
+          {{ /if }}
+        </div>
+      </div>
+      <div class="inner topic" id="{{ topic.topic_id }}">
+        <div class="topic_content">
+          <div class="markdown-text">
+            {{@ topic.content }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="header">
+        <span class="col_fade">添加回复</span>
+      </div>
+      <div class="inner reply">
+        <form class="reply_form">
+          <div class="markdown_editor in_editor">
+            <input type="hidden" name="topic_id" value="{{ topic.topic_id }}">
+            <input type="hidden" name="replier_id" value="{{ session_user._id }}">
+            <div class="markdown_in_editor">
+              <textarea class="span8 editor reply_editor" name="content" rows="4" style="display: none;"></textarea>
+              <div class="editor_buttons">
+                <input class="span-primary" type="submit" value="回复">
+              </div>
+            </div>
+          </div>
+          <input type="hidden" name="_csrf" id="_csrf" value="EIOncTPq-JlYvnqd1uh44jTtEvEwRCflqzm4">
+        </form>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="header">
+        <span class="col_fade">{{ topic.reply_count }} 回复</span>
+      </div>
+      {{ each replies }}
+      <div class="cell reply_area reply_item" id="{{ $value.reply_id }}">
+        <div class="author_content">
+          <a href="/user/{{ $value.nickname }}" class="user_avatar">
+            <img src="{{ $value.avatar }}" title="{{ $value.avatar }}"></a>
+          <div class="user_info">
+            <a class="dark reply_author" href="/user/{{ $value.nickname }}">{{ $value.nickname }}</a>
+            <a class="reply_time" href="javascript: void(0);">{{ $value.time_interval }}</a>
+            {{ if $value.nickname === user.nickname }}
+            <span class="reply_by_author">作者</span>
+            {{ /if }}
+          </div>
+          <div class="user_action">
+            <span>
+              {{ if $value.can_support }}
+              <i class="fa up_btn fa-thumbs-o-up" data-up_or_down="true" data-id="{{ $value.reply_id }}" title="喜欢"></i>
+              {{ else }}
+              <i class="fa up_btn fa-thumbs-o-up uped" data-up_or_down="false" data-id="{{ $value.reply_id }}"
+                title="喜欢"></i>
+              {{ /if }}
+              <span class="up-count">
+                {{ $value.support_count }}
+              </span>
+            </span>
+            {{ if session_user }}
+            {{ if $value.nickname === session_user.nickname }}
+            <a href="/reply/{{ $value.reply_id }}/edit" class="edit_reply_btn">
+              <i class="fa fa-pencil-square-o" title="编辑"></i>
+            </a>
+            <a href="javascript:void(0);" data-id="{{ $value.reply_id }}" class="delete_reply_btn">
+              <i class="fa fa-trash" title="删除"></i>
+            </a>
+            {{ /if }}
+            {{ /if }}
+            <span>
+              <i class="fa fa-reply reply2_btn" title="回复"></i>
+            </span>
+          </div>
+        </div>
+        <div class="reply_content from-Moodyboy">
+          <div class="markdown-text">
+            {{ if $value.replied_author_name }}
+            <a href="/user/{{ $value.replied_author_name }}" target="_blank">@<i>{{
+              $value.replied_author_name}}</i></a>
+            {{ /if }} {{@ $value.content }}
+          </div>
+        </div>
+        <div class="clearfix" style="display: none;">
+          <div class="reply2_area">
+            <form class="reply_form" reply_id="{{ $value.reply_id }}" style="display: block;">
+              <input type="hidden" name="topic_id" value="{{ topic.topic_id }}">
+              <input type="hidden" name="replier_id" value="{{ session_user._id }}">
+              <input type="hidden" name="reply_id" value="{{ $value.reply_id }}">
+              <div class="markdown_editor in_editor">
+                <div class="markdown_in_editor">
+                  <textarea class="span8 editor reply_editor" id="reply2_editor_5fdc0c6d0f99cb55d75e3524" name="content"
+                    rows="4" style="display: none;"></textarea>
+                  <div class="editor_buttons">
+                    <input class="span-primary reply2_submit_btn submit_btn" type="submit" svalue="回复">
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+      {{ /each }}
+    </div>
+  </div>
+  <div class="replies_history"
+    style="visibility: hidden; transition: opacity 0.5s; opacity: 0; position: absolute; z-index: -1;">
+    <div class="inner_content">
+    </div>
+    <div class="anchor" style="position: absolute;"></div>
+  </div>
+
+  <!-- 预览模态对话框 -->
+  <div class="modal fade" id="preview-modal">
+    <div class="modal-body" style="max-height: initial;">
+      <img src="" alt="点击内容或者外部自动关闭图片预览" id="preview-image">
+    </div>
+  </div>
+</div>
+<script src="/public/javascripts/tool.js"></script>
+<script>
+  $(function () {
+    // 禁止用户 回复自己的 回复
+    // 通过辨别是否有编辑选项，来辨别是不是 用户自己的回复
+    // $('.panel .reply2_btn').each(function () {
+    // 	if ($(this).parent().parent().find('.edit_reply_btn').length !== 0) {
+    // 		// $(this).css('pointer-events', 'none');// 让该元素不能被点击
+    // 		$(this).css('display', 'none');
+    // 	}
+    // });
+
+    // 绑定markdown插件
+    $('textarea.editor').each(function () {
+      const editor = new Editor();
+
+      editor.render(this);
+
+      $(this).data('editor', editor);
+    });
+    // end 绑定markdown插件
+
+    // 提交回复信息
+    $('.reply_form').on('submit', function (e) {
+      e.preventDefault();
+      const data = $(this).serialize();
+      sendAjax('post', '/reply', data).then((ret) => {
+        if (ret.code === 1) {
+          window.location.reload();
+        } else {
+          alert(ret.message);
+        }
+      });
+    });
+    // end 提交回复信息
+
+    // 让回复 的回复 编辑区域出现
+    $('.panel .reply2_btn').on('click', function () {
+      const oPanel = Array.prototype.slice
+        .call($(this).parents())
+        .find(item => {
+          return String($(item).attr('class')).search('cell') !== -1
+        });
+
+      const oEdit = $(oPanel).find('.clearfix');
+      $(this).css('pointer-events', 'none'); // 禁止点击
+      oEdit.slideDown();
+    });
+
+    // 删除回复
+    $('.delete_reply_btn').on('click', function () {
+      const confirm_del = window.confirm('确认要删除吗？');
+      if (!confirm_del) {
+        return false;
+      }
+
+      const data = {
+        topic_id: $('div[class="inner topic"]').attr('id'),
+        reply_id: $(this).attr('data-id')
+      }
+
+      sendAjax('get', '/reply/del', data).then((ret) => {
+        if (ret.code === 1) {
+          //修改回复数
+          $('.header .col_fade').text(ret.reply_count + ' 回复');
+          const oCell = Array.prototype.slice.call($(this).parents())
+            .find(item => {
+              return $(item).attr('class').search('reply_area') !== -1;
+            });
+
+          $(oCell).remove();
+        } else {
+          alert(ret.message);
+        }
+      });
+    });
+
+    // 给回复点赞
+    $('.up_btn').on('click', function () {
+      const data = {
+        reply_id: $(this).attr('data-id'),
+        up_or_down: $(this).attr('data-up_or_down') === 'true' ? true : false
+      };
+
+      sendAjax('get', '/reply/praise', data).then((ret) => {
+        if (ret.code === 1) {
+          // 重置点赞数
+          $(this)
+            .parent()
+            .find('.up-count')
+            .text(ret.support_count);
+          $(this).toggleClass('uped');
+        } else {
+          alert(ret.message);
+        }
+      });
+    });
+
+    // 收藏某话题
+    $('.collect_btn').on('click', function () {
+      const data = {
+        topic_id: $(this).attr('data_topic_id'),
+        is_collect: $(this).attr('data_col') === 'collect' ? true : false
+      };
+
+      sendAjax('get', '/collect', data).then((ret) => {
+        if (ret.code === 1) {
+          if ($(this).attr('data_col') === 'collect') {
+            $('input[data_col="collect"]').css('display', 'none');
+            $('input[data_col="de_collect"]').css('display', 'block');
+          }
+          else {
+            $('input[data_col="collect"]').css('display', 'block');
+            $('input[data_col="de_collect"]').css('display', 'none');
+          }
+        } else {
+          alert(ret.message);
+        }
+      });
+    });
+  });
+
+  // 获取回复历史部分
+  $(function () {
+
+    const markdownA = $('.markdown-text>a[target="_blank"]');
+    const history_div = $('.replies_history');
+    const show_css = {
+      'visibility': 'visible',
+      'opacity': 1,
+      'z-index': 99
+    };
+    const hide_css = {
+      'opacity': 0
+    };
+    let timeout = null;
+
+    const delay = function () {
+      clearTimeout(timeout);
+      timeout = setTimeout(function () {
+        history_div.css({
+          'visibility': 'hidden',
+          'z-index': -1
+        })
+      }, 500);
+    }
+
+    markdownA.on('mouseover', function (e) {
+      // 1、从服务端加载需要的信息
+      const Oreply = Array.prototype.slice.call($(this).parents())
+        .find(item => $(item).attr('class').search('reply_area') !== -1);
+      const data = {
+        reply_id: $(Oreply).attr('id')
+      };
+      sendAjax('get', '/reply/detail', data).then((data) => {
+        if (data.code === 2) {
+          const replies_history = data.replies_history;
+          const history_inner = $('.replies_history .inner_content');
+          history_inner.html('');
+          history_inner.append(`
+							<div class="title">查看对话</div>
+							<p>此用户的回复已经被删除</p>
+						`);
+        } else if (data.code === 1) {
+          const replies_history = data.replies_history;
+          const history_inner = $('.replies_history .inner_content');
+          history_inner.html('');
+          history_inner.append(`
+							<div class="title">查看对话</div>
+						`);
+
+          for (var i = 0; i < replies_history.length; i++) {
+            history_inner.append(`
+							<div class="item"></div>
+							<img src=${replies_history[i].avatar}
+										title="${replies_history[i].reply_to_name}" height="30px" width="30px">
+							<span>${replies_history[i].content}</span>
+							<a href="#${replies_history[i].reply_id}" class="scroll_to_original" title="查看原文">↑</a>
+						`);
+          }
+        } else {
+          alert('服务处理出错，请稍后重试   ' + data.message);
+        }
+
+
+        // 2、设置历史留言div 的位置
+        const left = $(this).offset().left + $(this).outerWidth(true) + 14 - $('#main').offset().left;
+        const top = $(this).offset().top - $('.navbar').outerHeight(true) - 26;
+
+        history_div.css({
+          'top': top + 'px',
+          'left': left + 'px'
+        });
+
+        // 3、计算偏移宽度，让 历史留言div 任何时候都在可视区域内，除过可是窗口过小的情况
+        let offset = 0; // 偏移量
+        if ($(window).height() >= history_div.outerHeight()) {
+          let security = $(window).height() - history_div.outerHeight();
+          let true_hei = history_div.offset().top - $(document).scrollTop();
+          if (true_hei > security) {
+            console.log(123);
+            offset = true_hei - security;
+          }
+        }
+
+        history_div.css('top', top - (offset === 0 ? 0 : offset + 40) + 'px');
+        // 4、设置小箭头的位置
+        const anch_top = $(this).offset().top - history_div.offset().top;
+        $('.anchor').css('top', anch_top + 'px');
+        // 5、显示出来
+        clearTimeout(timeout);
+        history_div.css(show_css);
+        e.stopPropagation();
+      });
+    });
+
+    markdownA.on('mouseout', function (e) {
+      history_div.css(hide_css);
+      delay();
+      e.stopPropagation();
+    });
+
+    history_div.on('mouseover', function (e) {
+      clearTimeout(timeout);
+      history_div.css(show_css);
+      e.stopPropagation();
+    });
+
+    history_div.on('mouseout', function (e) {
+      history_div.css(hide_css);
+      delay();
+      e.stopPropagation();
+    });
+  })
+	// end 获取回复历史部分
+</script>
+{{ /block }}
+
+
+
+<!-- navbar -->
