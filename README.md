@@ -38,4 +38,3 @@ Jquery、Ajax、NodeJs、Express、Art-template模板引擎、MongoDB
 ![image](https://user-images.githubusercontent.com/54530132/114530025-24f7d980-9c7d-11eb-8738-8050710918fc.png)
 #### 评论列表：
 ![image](https://user-images.githubusercontent.com/54530132/114530171-46f15c00-9c7d-11eb-9899-89697d2f28d1.png)
-
