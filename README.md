@@ -23,7 +23,7 @@ Jquery、Ajax、NodeJs、Express、Art-template模板引擎、MongoDB
 3. 使用Editor插件使用户可以用markdown语法编辑话题和回复。
 4. 使用session在服务端记录用户登录状态，防止用户信息外露。
 5. 使用art-template模板引擎技术，模块化view层，让view层更易于维护，减少代码冗余。
-### 接口文档：http://note.youdao.com/noteshare?id=f8e2c4d8d9ae348f0e4f7b9338a25a9f
+### 路由接口文档：http://note.youdao.com/noteshare?id=f8e2c4d8d9ae348f0e4f7b9338a25a9f
 
 ### 项目展示：
 #### 首页：
